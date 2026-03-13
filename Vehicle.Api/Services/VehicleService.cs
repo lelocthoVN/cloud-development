@@ -23,7 +23,10 @@ public class VehicleService(VehicleGenerator generator, IVehicleCache vehicleCac
         var cacheKey = $"vehicle:{id}";
         var stopwatch = Stopwatch.StartNew();
 
-        var cachedVehicle = await vehicleCache.GetOneAsync(cacheKey, cancellationToken);
+        var cachedVehicle = await TryReadCacheAsync(
+            () => vehicleCache.GetOneAsync(cacheKey, cancellationToken),
+            "Failed to read vehicle from cache. Key: {CacheKey}",
+            cacheKey);
 
         if (cachedVehicle is not null)
         {
@@ -45,20 +48,64 @@ public class VehicleService(VehicleGenerator generator, IVehicleCache vehicleCac
 
         var vehicle = generator.Generate(id);
 
-        await vehicleCache.SetOneAsync(
-            cacheKey,
-            vehicle,
-            TimeSpan.FromMinutes(5),
-            cancellationToken);
+        await TryWriteCacheAsync(
+            () => vehicleCache.SetOneAsync(
+                cacheKey,
+                vehicle,
+                TimeSpan.FromMinutes(5),
+                cancellationToken),
+            "Failed to write vehicle to cache. Key: {CacheKey}",
+            cacheKey);
 
         stopwatch.Stop();
 
         logger.LogInformation(
-            "Generated vehicle with id {Id} and cached it with key {CacheKey} in {ElapsedMs} ms",
+            "Generated vehicle with id {Id} in {ElapsedMs} ms",
             id,
-            cacheKey,
             stopwatch.ElapsedMilliseconds);
 
         return vehicle;
     }
+
+    /// <summary>
+    /// Безопасно читает данные из кэша.
+    /// </summary>
+    private async Task<T?> TryReadCacheAsync<T>(
+        Func<Task<T?>> action,
+        string warningMessage,
+        string cacheKey)
+    {
+        try
+        {
+            return await action();
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            logger.LogWarning(ex, warningMessage, cacheKey);
+            return default;
+        }
+    }
+
+    /// <summary>
+    /// Безопасно записывает данные в кэш.
+    /// </summary>
+    private async Task TryWriteCacheAsync(
+        Func<Task> action,
+        string warningMessage,
+        string cacheKey)
+    {
+        try
+        {
+            await action();
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            logger.LogWarning(ex, warningMessage, cacheKey);
+        }
+    }
+    
 }
+
+
+
+

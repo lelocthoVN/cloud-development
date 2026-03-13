@@ -11,13 +11,9 @@ builder.Services.AddCors(options =>
     options.AddPolicy("ClientCors", policy =>
     {
         policy
-            .WithOrigins(
-                "http://localhost:7282",
-                "https://localhost:7282",
-                "http://localhost:5127",
-                "https://localhost:5127")
-            .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyOrigin()
+            .WithMethods("GET")
+            .WithHeaders("Content-Type");
     });
 });
 
@@ -29,11 +25,7 @@ builder.Services.AddSingleton<VehicleGenerator>();
 builder.Services.AddScoped<IVehicleCache, RedisVehicleCache>();
 builder.Services.AddScoped<VehicleService>();
 
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = builder.Configuration.GetConnectionString("redis");
-    options.InstanceName = "vehicle-api";
-});
+builder.AddRedisDistributedCache("redis");
 
 var app = builder.Build();
 

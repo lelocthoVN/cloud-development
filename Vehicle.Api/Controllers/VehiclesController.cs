@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Threading;
 using Vehicle.Api.Entities;
 using Vehicle.Api.Services;
 
