@@ -8,27 +8,6 @@ namespace Vehicle.Api.Cache;
 public interface IVehicleCache
 {
     /// <summary>
-    /// Получает список объектов из кэша по ключу.
-    /// </summary>
-    /// <param name="key">Ключ кэша.</param>
-    /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Список объектов или null, если данных нет.</returns>
-    public Task<IReadOnlyList<VehicleEntity>?> GetAsync(string key, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Сохраняет список объектов в кэш.
-    /// </summary>
-    /// <param name="key">Ключ кэша.</param>
-    /// <param name="vehicles">Список объектов.</param>
-    /// <param name="ttl">Время хранения в кэше.</param>
-    /// <param name="cancellationToken">Токен отмены операции.</param>
-    public Task SetAsync(
-        string key,
-        IReadOnlyList<VehicleEntity> vehicles,
-        TimeSpan ttl,
-        CancellationToken cancellationToken = default);
-
-    /// <summary>
     /// Получает один объект из кэша по ключу.
     /// </summary>
     /// <param name="key">Ключ кэша.</param>

@@ -1,14 +1,4 @@
-﻿//var builder = DistributedApplication.CreateBuilder(args);
-
-//var redis = builder.AddRedis("redis");
-
-//builder.AddProject<Projects.Vehicle_Api>("vehicle-api")
-//    .WithReference(redis)
-//    .WaitFor(redis);
-
-//builder.Build().Run();
-
-var builder = DistributedApplication.CreateBuilder(args);
+﻿var builder = DistributedApplication.CreateBuilder(args);
 
 var redis = builder.AddRedis("redis").WithRedisCommander();
 
@@ -20,6 +10,3 @@ builder.AddProject<Projects.Client_Wasm>("client")
     .WaitFor(api);
 
 builder.Build().Run();
-
-
-    

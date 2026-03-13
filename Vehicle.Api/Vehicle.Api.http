@@ -1,6 +1,6 @@
-﻿@Vehicle.Api_HostAddress = https://localhost:5152
+﻿@Vehicle.Api_HostAddress = https://localhost:7096
 
-GET {{Vehicle.Api_HostAddress}}/api/Vehicles/generate?id=1
+GET {{Vehicle.Api_HostAddress}}/api/Vehicles?id=5
 Accept: application/json
 
 ###
